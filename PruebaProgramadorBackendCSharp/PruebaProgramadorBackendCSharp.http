@@ -1,0 +1,6 @@
+@PruebaProgramadorBackendCSharp_HostAddress = http://localhost:5073
+
+GET {{PruebaProgramadorBackendCSharp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
