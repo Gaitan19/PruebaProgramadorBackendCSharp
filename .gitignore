@@ -34,8 +34,6 @@ x86/
 packages/
 .nuget/
 
-# Entity Framework
-Migrations/
 
 # Test results
 [Tt]est[Rr]esult*/

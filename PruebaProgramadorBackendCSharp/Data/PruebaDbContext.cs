@@ -23,9 +23,27 @@ namespace PruebaProgramadorBackendCSharp.Data
             });
 
             modelBuilder.Entity<MarcaAuto>().HasData(
-                new MarcaAuto { Id = 1, Nombre = "Toyota", Descripcion = "Marca japonesa", FechaCreacion = new DateTime(1937, 8, 28) },
-                new MarcaAuto { Id = 2, Nombre = "Ford", Descripcion = "Marca estadounidense", FechaCreacion = new DateTime(1903, 6, 16) },
-                new MarcaAuto { Id = 3, Nombre = "BMW", Descripcion = "Marca alemana", FechaCreacion = new DateTime(1916, 3, 7) }
+                new MarcaAuto
+                {
+                    Id = 1,
+                    Nombre = "Toyota",
+                    Descripcion = "Marca japonesa",
+                    FechaCreacion = DateTime.SpecifyKind(new DateTime(1937, 8, 28), DateTimeKind.Utc)
+                },
+                new MarcaAuto
+                {
+                    Id = 2,
+                    Nombre = "Ford",
+                    Descripcion = "Marca estadounidense",
+                    FechaCreacion = DateTime.SpecifyKind(new DateTime(1903, 6, 16), DateTimeKind.Utc)
+                },
+                new MarcaAuto
+                {
+                    Id = 3,
+                    Nombre = "BMW",
+                    Descripcion = "Marca alemana",
+                    FechaCreacion = DateTime.SpecifyKind(new DateTime(1916, 3, 7), DateTimeKind.Utc)
+                }
             );
         }
     }

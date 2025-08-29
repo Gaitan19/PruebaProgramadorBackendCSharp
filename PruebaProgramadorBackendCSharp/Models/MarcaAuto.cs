@@ -7,6 +7,6 @@ namespace PruebaProgramadorBackendCSharp.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
-        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime FechaCreacion { get; set; }
     }
 }
