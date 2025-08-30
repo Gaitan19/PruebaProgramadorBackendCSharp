@@ -1,0 +1,300 @@
+===============================================================================
+            INSTRUCCIONES PARA PROBAR DOCKER COMPOSE - API REST
+===============================================================================
+
+📁 DIRECTORIO DE TRABAJO
+===============================================================================
+Todas las operaciones se ejecutan desde el directorio raíz del proyecto:
+└── PruebaProgramadorBackendCSharp/
+
+⚠️ IMPORTANTE: Asegúrate de estar en el directorio correcto antes de ejecutar comandos.
+
+🔧 REQUISITOS PREVIOS
+===============================================================================
+1. Docker instalado y funcionando
+2. Docker Compose instalado
+3. Puertos 5432 (PostgreSQL) y 8080 (API) disponibles
+
+Para verificar Docker:
+> docker --version
+> docker-compose --version
+
+===============================================================================
+                        🚀 PASOS PARA PROBAR DOCKER
+===============================================================================
+
+PASO 1: NAVEGAR AL DIRECTORIO CORRECTO
+===============================================================================
+Ejecutar desde tu terminal:
+
+> cd /ruta/al/proyecto/PruebaProgramadorBackendCSharp
+
+O si ya estás en el proyecto:
+> pwd
+Deberías ver: /ruta/al/proyecto/PruebaProgramadorBackendCSharp
+
+
+PASO 2: VERIFICAR ARCHIVOS DOCKER
+===============================================================================
+Verificar que existen los archivos necesarios:
+
+> ls -la
+Debes ver:
+- docker-compose.yml ✓
+- Dockerfile ✓
+- init-scripts/ ✓
+- PruebaProgramadorBackendCSharp/ ✓
+
+
+PASO 3: LIMPIAR CONTENEDORES PREVIOS (OPCIONAL)
+===============================================================================
+Si has ejecutado el proyecto antes, limpia los contenedores:
+
+> docker-compose down -v
+> docker system prune -f
+
+RESULTADO ESPERADO:
+- Mensaje: "Network prueba-network removed" o similar
+- No errores importantes
+
+
+PASO 4: CONSTRUIR Y EJECUTAR LOS SERVICIOS
+===============================================================================
+Ejecutar el comando principal:
+
+> docker-compose up -d --build
+
+RESULTADO ESPERADO:
+✓ Building api-rest...
+✓ Creating network "prueba-network"
+✓ Creating volume "prueba_postgres_data"
+✓ Creating prueba_postgres_db... done
+✓ Creating prueba_api_rest... done
+
+Tiempo estimado: 2-5 minutos (primera vez)
+
+
+PASO 5: VERIFICAR ESTADO DE LOS SERVICIOS
+===============================================================================
+Verificar que los contenedores están ejecutándose:
+
+> docker-compose ps
+
+RESULTADO ESPERADO:
+NAME                  COMMAND                  SERVICE             STATUS
+prueba_api_rest       "dotnet PruebaProg..."   api-rest           Up (healthy)
+prueba_postgres_db    "docker-entrypoint..."   postgres-db        Up (healthy)
+
+⚠️ Estado "healthy" puede tardar 1-2 minutos en aparecer.
+
+🔍 SI VES "unhealthy" EN LA API:
+===============================================================================
+Si el API aparece como "Up (unhealthy)", esto indica que la aplicación no está 
+respondiendo correctamente. El problema más común es que las migraciones de base 
+de datos no se aplicaron automáticamente.
+
+🔧 SOLUCIÓN RÁPIDA:
+> docker-compose down
+> docker-compose up -d --build
+
+1. Verificar logs de la API para diagnóstico:
+> docker-compose logs api-rest
+
+ERRORES COMUNES EN LOGS:
+- "Unable to connect to database" → PostgreSQL no está listo aún
+- "Migration error" → Problemas con migraciones de Entity Framework
+- "ResourceInvoker error" → Error de inicialización de la aplicación
+
+2. Verificar que PostgreSQL está healthy:
+> docker-compose ps
+
+3. Si persiste el problema, verificar conectividad manual:
+> curl -X GET http://localhost:8080/api/MarcasAutos
+
+4. Verificar health check específico:
+> docker inspect prueba_api_rest | grep -A 5 '"Health"'
+
+⚠️ IMPORTANTE: La aplicación ahora aplica migraciones automáticamente al iniciar,
+   pero esto puede tardar 30-60 segundos la primera vez.
+
+
+PASO 6: VERIFICAR LOGS DE LOS SERVICIOS
+===============================================================================
+Para ver logs de la API:
+> docker-compose logs api-rest
+
+RESULTADO ESPERADO:
+✓ "Now listening on: http://[::]:80"
+✓ "Application started. Press Ctrl+C to shut down."
+✓ Sin errores de conexión a base de datos
+
+Para ver logs de PostgreSQL:
+> docker-compose logs postgres-db
+
+RESULTADO ESPERADO:
+✓ "database system is ready to accept connections"
+✓ "Base de datos prueba_db inicializada correctamente"
+
+
+PASO 7: PROBAR LA API REST
+===============================================================================
+Opción A - Navegador Web:
+Abrir en el navegador: http://localhost:8080/api/MarcasAutos
+
+Opción B - Comando curl:
+> curl -X GET http://localhost:8080/api/MarcasAutos
+
+RESULTADO ESPERADO:
+- Código de respuesta: 200 OK
+- Respuesta JSON: [] (array vacío si no hay datos)
+- Sin errores de conexión
+
+
+PASO 8: PROBAR ENDPOINTS PRINCIPALES
+===============================================================================
+Obtener todas las marcas:
+> curl -X GET http://localhost:8080/api/MarcasAutos
+
+Crear una nueva marca:
+> curl -X POST http://localhost:8080/api/MarcasAutos \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Toyota","activo":true}'
+
+Obtener marca por ID (reemplazar {id} con ID real):
+> curl -X GET http://localhost:8080/api/MarcasAutos/{id}
+
+RESULTADOS ESPERADOS:
+- GET: Código 200, lista de marcas
+- POST: Código 201, marca creada
+- GET por ID: Código 200, marca específica
+
+
+PASO 9: VERIFICAR BASE DE DATOS POSTGRESQL
+===============================================================================
+Conectar a PostgreSQL:
+> docker exec -it prueba_postgres_db psql -U postgres -d prueba_db
+
+Dentro de PostgreSQL, ejecutar:
+prueba_db=# \dt
+prueba_db=# SELECT * FROM "MarcasAutos";
+prueba_db=# \q
+
+RESULTADO ESPERADO:
+✓ Tabla "MarcasAutos" existe
+✓ Datos insertados se muestran correctamente
+✓ Conexión exitosa
+
+
+PASO 10: HEALTH CHECKS
+===============================================================================
+Verificar health checks de los servicios:
+
+> docker inspect prueba_api_rest | grep -A 10 '"Health"'
+> docker inspect prueba_postgres_db | grep -A 10 '"Health"'
+
+RESULTADO ESPERADO:
+- "Status": "healthy" para ambos servicios
+
+
+===============================================================================
+                        🛠️ COMANDOS ÚTILES ADICIONALES
+===============================================================================
+
+MONITOREO EN TIEMPO REAL:
+> docker-compose logs -f                    # Ver logs en tiempo real
+> docker stats                              # Ver uso de recursos
+
+DEBUGGING:
+> docker-compose exec api-rest bash         # Acceder al contenedor de la API
+> docker-compose exec postgres-db bash      # Acceder al contenedor de PostgreSQL
+
+REINICIAR SERVICIOS:
+> docker-compose restart                    # Reiniciar todos los servicios
+> docker-compose restart api-rest           # Reiniciar solo la API
+
+DETENER SERVICIOS:
+> docker-compose stop                       # Detener servicios
+> docker-compose down                       # Detener y eliminar contenedores
+> docker-compose down -v                    # Incluir volúmenes
+
+
+===============================================================================
+                        ❌ SOLUCIÓN DE PROBLEMAS
+===============================================================================
+
+PROBLEMA: Puerto 8080 ya está en uso
+SOLUCIÓN: 
+> netstat -tulpn | grep :8080
+> kill -9 <PID_del_proceso>
+
+PROBLEMA: Puerto 5432 ya está en uso (PostgreSQL local)
+SOLUCIÓN: 
+> sudo systemctl stop postgresql
+O cambiar puerto en docker-compose.yml: "5433:5432"
+
+PROBLEMA: Error "no space left on device"
+SOLUCIÓN:
+> docker system prune -a -f
+> docker volume prune -f
+
+PROBLEMA: API aparece como "unhealthy" en docker-compose ps
+SOLUCIÓN:
+1. ⚡ CAUSA COMÚN: Migraciones de base de datos no aplicadas
+   > docker-compose logs api-rest
+   (Buscar errores de "ResourceInvoker" o "Migration")
+   
+2. SOLUCIÓN AUTOMÁTICA (implementada en la última versión):
+   - La aplicación ahora aplica migraciones automáticamente al iniciar
+   - Puede tardar 40-60 segundos en la primera ejecución
+   
+3. Si persiste el problema:
+   > docker-compose down
+   > docker-compose up -d --build
+   
+4. Verificar respuesta manual:
+   > curl http://localhost:8080/api/MarcasAutos
+   
+5. Ver detalles del health check:
+   > docker inspect prueba_api_rest | grep -A 10 '"Health"'
+
+PROBLEMA: API no responde (504 Gateway Timeout)
+SOLUCIÓN:
+1. Verificar logs: docker-compose logs api-rest
+2. Verificar health check de PostgreSQL
+3. Reiniciar servicios: docker-compose restart
+
+PROBLEMA: Error de migración de base de datos
+SOLUCIÓN:
+> docker-compose down -v
+> docker-compose up -d --build
+
+
+===============================================================================
+                        ✅ RESULTADOS EXITOSOS FINALES
+===============================================================================
+
+Al completar todos los pasos, deberías tener:
+
+1. ✓ Dos contenedores ejecutándose correctamente
+2. ✓ API REST accesible en http://localhost:8080
+3. ✓ PostgreSQL funcionando en puerto 5432
+4. ✓ Health checks mostrando estado "healthy"
+5. ✓ Endpoints de la API respondiendo correctamente
+6. ✓ Base de datos creada y accesible
+
+URLs IMPORTANTES:
+- API REST: http://localhost:8080/api/MarcasAutos
+- Documentación Swagger: http://localhost:8080/swagger (si está habilitado)
+
+===============================================================================
+                        📞 INFORMACIÓN DE CONTACTO
+===============================================================================
+
+Si encuentras problemas no cubiertos en esta guía:
+1. Revisa los logs con: docker-compose logs
+2. Verifica que Docker esté funcionando: docker --version
+3. Asegúrate de estar en el directorio correcto
+4. Verifica que los puertos no estén ocupados
+
+¡Happy Testing! 🐳🚀
+===============================================================================
