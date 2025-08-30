@@ -5,7 +5,7 @@
 📁 DIRECTORIO DE TRABAJO
 ===============================================================================
 Todas las operaciones se ejecutan desde el directorio raíz del proyecto:
-└── PruebaKenPanama/
+└── PruebaProgramadorBackendCSharp/
 
 ⚠️ IMPORTANTE: Asegúrate de estar en el directorio correcto antes de ejecutar comandos.
 
@@ -27,11 +27,11 @@ PASO 1: NAVEGAR AL DIRECTORIO CORRECTO
 ===============================================================================
 Ejecutar desde tu terminal:
 
-> cd /ruta/al/proyecto/PruebaKenPanama
+> cd /ruta/al/proyecto/PruebaProgramadorBackendCSharp
 
 O si ya estás en el proyecto:
 > pwd
-Deberías ver: /ruta/al/proyecto/PruebaKenPanama
+Deberías ver: /ruta/al/proyecto/PruebaProgramadorBackendCSharp
 
 
 PASO 2: VERIFICAR ARCHIVOS DOCKER
