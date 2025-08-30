@@ -55,7 +55,5 @@ app.MapControllers();
 
 app.Run();
 
-/// <summary>
-/// Clase Program pública para permitir el acceso en las pruebas de integración
-/// </summary>
+
 public partial class Program { }
