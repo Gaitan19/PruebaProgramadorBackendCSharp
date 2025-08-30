@@ -22,6 +22,26 @@ namespace PruebaProgramadorBackendCSharp.Repositories
             return await _context.MarcasAutos.FindAsync(id);
         }
 
-       
+        public async Task AddAsync(MarcaAuto marca)
+        {
+            await _context.MarcasAutos.AddAsync(marca);
+        }
+
+        public void Update(MarcaAuto marca)
+        {
+            _context.MarcasAutos.Update(marca);
+        }
+
+        public void Delete(MarcaAuto marca)
+        {
+            _context.MarcasAutos.Remove(marca);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 }

@@ -6,6 +6,10 @@ namespace PruebaProgramadorBackendCSharp.Repositories
     {
         Task<IEnumerable<MarcaAuto>> GetAllAsync();
         Task<MarcaAuto?> GetByIdAsync(int id);
-      
+        Task AddAsync(MarcaAuto marca);
+        void Update(MarcaAuto marca);
+        void Delete(MarcaAuto marca);
+        Task SaveChangesAsync();
+
     }
 }

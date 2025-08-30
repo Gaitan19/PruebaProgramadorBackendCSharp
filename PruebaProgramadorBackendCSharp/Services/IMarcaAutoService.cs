@@ -1,4 +1,5 @@
-﻿using PruebaProgramadorBackendCSharp.Models;
+﻿using PruebaProgramadorBackendCSharp.DTOs;
+using PruebaProgramadorBackendCSharp.Models;
 
 namespace PruebaProgramadorBackendCSharp.Services
 {
@@ -6,5 +7,8 @@ namespace PruebaProgramadorBackendCSharp.Services
     {
         Task<IEnumerable<MarcaAuto>> ObtenerTodasAsync();
         Task<MarcaAuto?> ObtenerPorIdAsync(int id);
+        Task<MarcaAuto> CrearAsync(MarcaAutoCreateDto dto);
+        Task<MarcaAuto> ActualizarAsync(MarcaAutoUpdateDto dto);
+        Task EliminarAsync(int id);
     }
 }
