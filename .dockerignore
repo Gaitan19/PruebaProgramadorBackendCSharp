@@ -1,0 +1,53 @@
+# Archivos y directorios que deben ser ignorados por Docker
+# para optimizar el proceso de build
+
+# Archivos de compilación y binarios
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+
+# Archivos de pruebas y cobertura
+**/*Tests/
+**/coverage/
+**/*.trx
+**/*.coverage
+
+# Archivos de desarrollo
+**/.vscode/
+**/.vs/
+**/.idea/
+**/*.user
+**/*.suo
+**/*.userosscache
+**/*.sln.docstates
+
+# Archivos del sistema
+**/.DS_Store
+**/Thumbs.db
+
+# Archivos de Git
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Archivos de Docker
+**/Dockerfile*
+**/docker-compose*
+**/*.dockerignore
+
+# Archivos de documentación
+**/README.md
+**/*.md
+
+# Archivos de logs
+**/logs/
+**/*.log
+
+# Archivos temporales
+**/tmp/
+**/temp/
+
+# Archivos de configuración específicos del entorno
+**/appsettings.Development.json
+**/appsettings.Local.json

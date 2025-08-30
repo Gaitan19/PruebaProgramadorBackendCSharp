@@ -1,0 +1,65 @@
+# Docker Compose para PruebaProgramadorBackendCSharp
+# Configura dos servicios: PostgreSQL (base de datos) y API REST
+
+services:
+  # Servicio de PostgreSQL para la base de datos
+  postgres-db:
+    image: postgres:15
+    container_name: prueba_postgres_db
+    restart: always
+    environment:
+      # Configuración de la base de datos PostgreSQL
+      POSTGRES_DB: prueba_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 19062003kk
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      # Volumen persistente para los datos de la base de datos
+      - postgres_data:/var/lib/postgresql/data
+      # Script de inicialización si es necesario
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - prueba-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d prueba_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Servicio de la API REST
+  api-rest:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: prueba_api_rest
+    restart: always
+    environment:
+      # Configuración de la conexión a la base de datos
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres-db;Port=5432;Database=prueba_db;Username=postgres;Password=19062003kk;Pooling=true;
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - prueba-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/MarcasAutos"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Definición de volúmenes
+volumes:
+  postgres_data:
+    driver: local
+
+# Definición de redes
+networks:
+  prueba-network:
+    driver: bridge
